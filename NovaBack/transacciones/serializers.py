@@ -27,3 +27,10 @@ class TransaccionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaccion
         fields = ['usuario', 'concepto', 'monto', 'notas']
+
+# Serializador básico para usar en otros apps
+class TransaccionBasicaSerializer(serializers.ModelSerializer):
+    """Para usar en otros serializadores"""
+    class Meta:
+        model = Transaccion
+        fields = ['id', 'concepto', 'monto', 'fecha']

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from usuarios.models import Usuario
+from metas.models import Meta
+from transacciones.models import Transaccion
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,3 +41,28 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         return Usuario.objects.create_user(**validated_data)
+
+# Serializadores para relaciones anidadas
+class MetaBasicaSerializer(serializers.ModelSerializer):
+    """Serializer básico para metas (sin relaciones anidadas)"""
+    class Meta:
+        model = Meta
+        fields = ['id', 'nombre', 'meta_monto', 'ahorro_actual', 'progreso']
+
+class TransaccionBasicaSerializer(serializers.ModelSerializer):
+    """Serializer básico para transacciones"""
+    class Meta:
+        model = Transaccion
+        fields = ['id', 'concepto', 'monto', 'fecha']
+
+class UsuarioConMetasSerializer(UsuarioSerializer):
+    metas = MetaBasicaSerializer(many=True, read_only=True)
+    
+    class Meta(UsuarioSerializer.Meta):
+        fields = UsuarioSerializer.Meta.fields + ['metas']
+
+class UsuarioConTransaccionesSerializer(UsuarioSerializer):
+    transacciones = TransaccionBasicaSerializer(many=True, read_only=True)
+    
+    class Meta(UsuarioSerializer.Meta):
+        fields = UsuarioSerializer.Meta.fields + ['transacciones']
