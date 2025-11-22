@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'metas',
     'usuarios',
-    'transacciones'
+    'transacciones',
     'notificaciones',
 ]
 

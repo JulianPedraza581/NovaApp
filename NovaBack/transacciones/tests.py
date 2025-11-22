@@ -15,19 +15,19 @@ class TransaccionTestCase(TestCase):
             "presupuesto_mensual": 1500.50,
         }
 
-        user = Usuario.objects.create(
-            username = datos_usuario['username'],
-            password = datos_usuario['password'],
-            email = datos_usuario['email'],
-            telefono = datos_usuario['telefono'],
-            presupuesto_mensual = datos_usuario['presupuesto_mensual']
-        )
+        datos_transaccion = {
+            "concepto": "Pago Universidad",
+            "monto":1000,
+            "notas":"Pago de la matrícula, semestre 7"
+        }
+
+        user = Usuario.objects.create_user(**datos_usuario)
 
         Transaccion.objects.create(
             usuario = user,
-            concepto="Pago Universidad",
-            monto = 1000,
-            notas = "Pago de la matrícula, del semestre 7"
+            concepto=datos_transaccion['concepto'],
+            monto = datos_transaccion['monto'],
+            notas =datos_transaccion['notas']
         )
 
         self.assertTrue(Transaccion.objects.exists())
@@ -43,22 +43,24 @@ class TransaccionTestCase(TestCase):
             "presupuesto_mensual": 2030.10,
         }
 
-        user = Usuario.objects.create(
-            username = datos_usuario['username'],
-            password = datos_usuario['password'],
-            email = datos_usuario['email'],
-            telefono = datos_usuario['telefono'],
-            presupuesto_mensual = datos_usuario['presupuesto_mensual']
-        )
+        datos_transaccion = {
+            "concepto": "Pago Casa",
+            "monto":2500,
+            "notas":"Cuota 92"
+        }
+
+        user = Usuario.objects.create_user(**datos_usuario)
 
         Transaccion.objects.create(
             usuario = user,
-            concepto="Pago Universidad",
-            monto = 1000,
-            notas = "Pago de la matrícula, del semestre 7"
+            concepto=datos_transaccion['concepto'],
+            monto = datos_transaccion['monto'],
+            notas = datos_transaccion['notas']
         )
 
-        self.assertEqual(Transaccion.objects.all()[0].usuario.username ,user.username)
+        username = Transaccion.objects.all()[0].usuario.username
+
+        self.assertEqual( username,user.username)
 
     
     def test_verificar_error_valor_negativo(self):
@@ -70,32 +72,19 @@ class TransaccionTestCase(TestCase):
             "presupuesto_mensual": 2030.10,
         }
 
-        user = Usuario.objects.create(
-            username = datos_usuario['username'],
-            password = datos_usuario['password'],
-            email = datos_usuario['email'],
-            telefono = datos_usuario['telefono'],
-            presupuesto_mensual = datos_usuario['presupuesto_mensual']
-        )
+        user = Usuario.objects.create_user(**datos_usuario)
+
+        datos_transaccion = {
+            "concepto": "Pago Luz",
+            "monto":-2500,
+            "notas":"Febrero"
+        }
 
         with self.assertRaises(ValidationError):
             Transaccion.objects.create(
                 usuario = user ,
-                concepto="Pago Universidad",
-                monto = -1000,
-                notas = "Pago de la matrícula, del semestre 7"
+                concepto=datos_transaccion['concepto'],
+                monto = datos_transaccion['monto'],
+                notas = datos_transaccion['notas']
             )
 
-
-
-'''
-def save(self, *args, **kwargs):
-        self.full_clean()  # ← activa validadores
-        super().save(*args, **kwargs)
-
-    concepto = models.CharField(max_length=200)
-    monto = models.DecimalField(max_digits=12, decimal_places=2)
-    fecha = models.DateTimeField(auto_now_add=True)
-    notas = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-'''
