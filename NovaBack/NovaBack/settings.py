@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'usuarios',
     'transacciones',
     'notificaciones',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

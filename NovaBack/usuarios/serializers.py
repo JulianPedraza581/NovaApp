@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from usuarios.models import Usuario
+from metas.models import Meta
+from transacciones.models import Transaccion
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:

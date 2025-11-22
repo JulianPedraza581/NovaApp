@@ -55,3 +55,28 @@ class MetaCreateSerializer(serializers.ModelSerializer):
             'color',
             'imagen'
         ]
+class AporteMetaSerializer(serializers.ModelSerializer):
+    meta_nombre = serializers.CharField(source='meta.nombre', read_only=True)
+    
+    class Meta:
+        model = AporteMeta
+        fields = [
+            'id',
+            'meta',
+            'meta_nombre',
+            'monto',
+            'fecha',
+            'notas'
+        ]
+        read_only_fields = ['id', 'fecha']
+    
+    def validate_monto(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("El monto debe ser mayor a cero")
+        return value
+
+class AporteMetaCreateSerializer(serializers.ModelSerializer):
+    """Serializer específico para creación de aportes"""
+    class Meta:
+        model = AporteMeta
+        fields = ['meta', 'monto', 'notas']
