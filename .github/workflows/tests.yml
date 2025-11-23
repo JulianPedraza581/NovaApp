@@ -1,4 +1,4 @@
-name: Django Unit Tests
+name: Django Tests with Allure
 
 on:
   pull_request:
@@ -11,34 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Descargar repositorio
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # 2️⃣ Configurar Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.13"
 
+      # 3️⃣ Instalar dependencias + pytest + allure
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r NovaBack/requirements.txt
-          pip install coverage
+          pip install coverage pytest pytest-django allure-pytest
 
+      # 4️⃣ Migraciones de Django
       - name: Run migrations
         working-directory: ./NovaBack
-        run: |
-          python manage.py migrate
+        run: python manage.py migrate
 
-      - name: Run Django tests
+      # 5️⃣ Ejecutar tests con pytest + Allure
+      - name: Run Django tests with Allure
         working-directory: ./NovaBack
         run: |
-          coverage run manage.py test
-          coverage report
-          coverage xml
+          pytest tests/ --alluredir=tests/results
 
-      - name: Upload coverage report
+      # 6️⃣ Subir resultados de Allure como artifact
+      - name: Upload Allure results
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: NovaBack/coverage.xml
+          name: allure-results
+          path: NovaBack/tests/results
