@@ -17,6 +17,7 @@ router.register(r'transacciones', TransaccionViewSet, basename='transaccion')
 router.register(r'notificaciones', NotificacionViewSet, basename='notificacion')
 
 urlpatterns = [
+    path("", include("django_prometheus.urls")),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
