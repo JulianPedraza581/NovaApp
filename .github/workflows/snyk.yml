@@ -15,24 +15,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Configurar Docker (si tu backend corre en contenedor)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # 2️⃣ Instalar Snyk en el runner
+      - name: Install Snyk CLI
+        run: npm install -g snyk
 
-      # 3️⃣ Construir contenedor del backend
-      - name: Build backend Docker image
-        run: docker build -t nova_backend -f NovaBack/Dockerfile NovaBack/
-
-      # 4️⃣ Ejecutar Snyk dentro del contenedor
-      - name: Run Snyk test inside container
-        run: |
-          docker run --rm nova_backend sh -c "pip freeze > deps.txt && snyk test --file=deps.txt --package-manager=pip --skip-unresolved"
+      # 3️⃣ Ejecutar Snyk test usando requirements.txt
+      - name: Run Snyk test
+        run: snyk test --file=NovaBack/requirements.txt --package-manager=pip --skip-unresolved
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # 5️⃣ Opcional: Monitorear con Snyk para alertas futuras
+      # 4️⃣ Opcional: Monitorear para alertas futuras
       - name: Snyk monitor
-        run: |
-          docker run --rm nova_backend sh -c "pip freeze > deps.txt && snyk monitor --file=deps.txt --package-manager=pip --skip-unresolved"
+        run: snyk monitor --file=NovaBack/requirements.txt --package-manager=pip --skip-unresolved
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
