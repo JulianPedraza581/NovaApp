@@ -1,7 +1,15 @@
-from rest_framework import serializers
+from rest_framework import serializers, permissions
 from usuarios.models import Usuario
+from rest_framework import viewsets
 from metas.models import Meta
 from transacciones.models import Transaccion
+
+
+class UsuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
