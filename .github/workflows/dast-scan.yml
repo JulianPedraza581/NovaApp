@@ -26,9 +26,10 @@ jobs:
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker run --rm --network="host" \
-          -v ${{ github.workspace }}:/zap/wrk \
-          ghcr.io/zaproxy/zaproxy:stable \
-          /zap/zap-baseline.py -t http://localhost:8000/api/ -r /zap/wrk/zap_report.html -I
+            -v ${{ github.workspace }}:/zap/wrk \
+            ghcr.io/zaproxy/zaproxy:stable \
+            /zap/zap-baseline.py -t http://localhost:8000/api/ -r /zap/wrk/zap_report.html -I
+          ls -la /zap/wrk
 
       - name: List all files recursively in workspace
         run: ls -laR ${{ github.workspace }}
