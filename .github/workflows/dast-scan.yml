@@ -1,0 +1,36 @@
+name: DAST Scan
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Descargar repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Configurar contenedor de backend
+      - name: Build backend Docker image
+        run: docker build -t nova_backend -f NovaBack/Dockerfile NovaBack/
+
+      - name: Run backend container
+        run: docker run -d --name nova_backend -p 8000:8000 nova_backend
+
+      # 3️⃣ Ejecutar OWASP ZAP
+      - name: Run OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v1
+        with:
+          target: 'http://localhost:8000'
+          failOnRisk: 'high'
+          cmdOptions: '-T 1'
+
+      # 4️⃣ Detener contenedor
+      - name: Stop backend container
+        if: always()
+        run: docker stop nova_backend
