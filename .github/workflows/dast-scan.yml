@@ -1,4 +1,4 @@
-name: DAST Scan - OWASP ZAP
+name: OWASP ZAP Baseline Scan
 
 on:
   push:
@@ -7,43 +7,35 @@ on:
     branches: ["main", "master"]
 
 jobs:
-  dast-scan:
+  zap-baseline:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout del repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build backend Docker image
-        run: docker build -t nova_backend -f NovaBack/Dockerfile NovaBack/
-
-      - name: Run backend container
-        run: docker run -d --name nova_backend -p 8000:8000 nova_backend
-
-      - name: Wait for backend to be ready
+      # 2️⃣ Levantar el backend (tu imagen Docker ya construida)
+      - name: Start backend container
         run: |
-          for i in $(seq 1 20); do
-            if curl --silent http://localhost:8000/metrics; then
-              exit 0
-            fi
-            sleep 3
-          done
-          echo "Backend not ready" && exit 1
+          docker build -t nova_backend -f NovaBack/Dockerfile NovaBack/
+          docker run -d --name nova_backend -p 8000:8000 nova_backend
+          sleep 10  # Esperar a que el backend esté listo
 
+      # 3️⃣ Ejecutar ZAP Baseline Scan
       - name: Run OWASP ZAP Baseline Scan
         run: |
-          docker run --rm owasp/zap2docker-stable zap-baseline.py \
-            -t http://host.docker.internal:8000 \
-            -r zap_report.html \
-            -m 3 \
-            -z "-config api.addrs.addr.name=.* -config api.addrs.addr.regex=true"
-      
-      - name: Upload ZAP Report
+          docker run --rm --network="host" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://localhost:8000 -r zap_report.html
+
+      # 4️⃣ Guardar reporte como artefacto
+      - name: Upload ZAP report
         uses: actions/upload-artifact@v4
         with:
-          name: zap_report
+          name: zap-report
           path: zap_report.html
 
+      # 5️⃣ Detener el backend
       - name: Stop backend container
         if: always()
-        run: docker stop nova_backend
+        run: docker stop nova_backend && docker rm nova_backend
