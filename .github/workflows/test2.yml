@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t myapp-image .
+        run: docker build -t myapp-image -f NovaBack/Dockerfile NovaBack/
 
       - name: Run docker compose
         run: |
