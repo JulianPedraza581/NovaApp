@@ -26,10 +26,19 @@ jobs:
         pip install coverage
 
     - name: Run migrations
+      working-directory: ./NovaBack
       run: |
-        python NovaBack/manage.py migrate
+        python manage.py migrate
 
     - name: Run Django tests
+      working-directory: ./NovaBack
       run: |
-        coverage run NovaBack/manage.py test
+        coverage run manage.py test
         coverage report
+        coverage xml
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: NovaBack/coverage.xml
