@@ -1,11 +1,9 @@
 name: Docker Build and Compose Test
-
 on:
   push:
     branches: ["main", "master"]
   pull_request:
     branches: ["main", "master"]
-
 jobs:
   docker-test:
     runs-on: ubuntu-latest
