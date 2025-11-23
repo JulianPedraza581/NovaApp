@@ -39,7 +39,7 @@ jobs:
         working-directory: ./NovaBack
         run: |
           mkdir -p tests/results/allure_raw
-          pytest NovaBack/**/tests.py --alluredir=tests/results/allure_raw
+          pytest NovaBack --alluredir=tests/results/allure_raw
           coverage run manage.py test
           coverage xml -o tests/results/coverage.xml
 
