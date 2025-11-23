@@ -4,7 +4,7 @@ FROM python:3.13-slim
 WORKDIR /app
 
 # Copiar requirements e instalar dependencias
-COPY /Nova/requirements.txt .
+COPY /NovaBack/requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r /NovaBack/requirements.txt
